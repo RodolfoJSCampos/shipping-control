@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "119839042440",
+    "project_id": "shipping-control-9ce73",
+    "storage_bucket": "shipping-control-9ce73.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:119839042440:android:3b5bfecc3efe416ded283d",
+        "android_client_info": {
+          "package_name": "com.example.shipping_control"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4qQetmUey8mKQKJeaoFHXAaXIOodjn0s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
