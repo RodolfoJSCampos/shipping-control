@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../routes/route_names.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,7 +15,6 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _errorMessage;
 
   final Color _primaryGreen = const Color(0xFF2E7D32);
-  final Color _accentOrange = const Color(0xFFFF9800);
 
   Future<void> _login() async {
     setState(() {
