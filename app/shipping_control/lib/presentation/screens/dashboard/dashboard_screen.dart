@@ -52,14 +52,15 @@ class DashboardScreen extends StatelessWidget {
                     border: OutlineInputBorder(),
                   ),
                   value: selectedMotorista,
-                  items: motoristas
-                      .map(
-                        (motorista) => DropdownMenuItem(
-                          value: motorista,
-                          child: Text(motorista),
-                        ),
-                      )
-                      .toList(),
+                  items:
+                      motoristas
+                          .map(
+                            (motorista) => DropdownMenuItem(
+                              value: motorista,
+                              child: Text(motorista),
+                            ),
+                          )
+                          .toList(),
                   onChanged: (value) {
                     setState(() {
                       selectedMotorista = value;
@@ -81,21 +82,22 @@ class DashboardScreen extends StatelessWidget {
                   Focus(
                     focusNode: botaoSalvarFocus,
                     child: FilledButton(
-                      onPressed: selectedMotorista == null
-                          ? null
-                          : () async {
-                              await FirebaseFirestore.instance
-                                  .collection('notas')
-                                  .doc(notaId)
-                                  .update({
-                                'motorista': selectedMotorista,
-                                'expedicao':
-                                    DateTime.now().toIso8601String(),
-                              });
-                              motoristaFocus.dispose();
-                              botaoSalvarFocus.dispose();
-                              Navigator.of(ctx).pop();
-                            },
+                      onPressed:
+                          selectedMotorista == null
+                              ? null
+                              : () async {
+                                await FirebaseFirestore.instance
+                                    .collection('notas')
+                                    .doc(notaId)
+                                    .update({
+                                      'motorista': selectedMotorista,
+                                      'expedicao':
+                                          DateTime.now().toIso8601String(),
+                                    });
+                                motoristaFocus.dispose();
+                                botaoSalvarFocus.dispose();
+                                Navigator.of(ctx).pop();
+                              },
                       child: const Text('Salvar'),
                     ),
                   ),
@@ -162,12 +164,18 @@ class DashboardScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: colors.primary,
+        titleTextStyle: theme.textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: colors.primary,
+        ),
         title: const Text('Dashboard'),
         leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
+          builder:
+              (context) => IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
         ),
       ),
       drawer: Drawer(
@@ -194,10 +202,11 @@ class DashboardScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('notas')
-              .where('finalizacao', isNull: true)
-              .snapshots(),
+          stream:
+              FirebaseFirestore.instance
+                  .collection('notas')
+                  .where('finalizacao', isNull: true)
+                  .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(
@@ -208,28 +217,30 @@ class DashboardScreen extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             }
 
-            final notasDocs = (snapshot.data?.docs ?? []).toList()
-              ..sort((a, b) {
-                final dataA = a.data() as Map<String, dynamic>;
-                final dataB = b.data() as Map<String, dynamic>;
+            final notasDocs =
+                (snapshot.data?.docs ?? []).toList()..sort((a, b) {
+                  final dataA = a.data() as Map<String, dynamic>;
+                  final dataB = b.data() as Map<String, dynamic>;
 
-                final motoristaA = dataA['motorista'];
-                final motoristaB = dataB['motorista'];
+                  final motoristaA = dataA['motorista'];
+                  final motoristaB = dataB['motorista'];
 
-                final aSemMotorista = motoristaA == null || motoristaA.toString().isEmpty;
-                final bSemMotorista = motoristaB == null || motoristaB.toString().isEmpty;
+                  final aSemMotorista =
+                      motoristaA == null || motoristaA.toString().isEmpty;
+                  final bSemMotorista =
+                      motoristaB == null || motoristaB.toString().isEmpty;
 
-                if (aSemMotorista && !bSemMotorista) return -1;
-                if (!aSemMotorista && bSemMotorista) return 1;
+                  if (aSemMotorista && !bSemMotorista) return -1;
+                  if (!aSemMotorista && bSemMotorista) return 1;
 
-                final entradaA = DateTime.tryParse(dataA['entrada'] ?? '');
-                final entradaB = DateTime.tryParse(dataB['entrada'] ?? '');
+                  final entradaA = DateTime.tryParse(dataA['entrada'] ?? '');
+                  final entradaB = DateTime.tryParse(dataB['entrada'] ?? '');
 
-                if (entradaA != null && entradaB != null) {
-                  return entradaA.compareTo(entradaB);
-                }
-                return 0;
-              });
+                  if (entradaA != null && entradaB != null) {
+                    return entradaA.compareTo(entradaB);
+                  }
+                  return 0;
+                });
 
             if (notasDocs.isEmpty) {
               return const Center(child: Text('Nenhuma nota encontrada.'));
@@ -252,27 +263,33 @@ class DashboardScreen extends StatelessWidget {
 
                 final entradaStr = nota['entrada'] ?? '';
                 final entrada =
-                    entradaStr.isNotEmpty ? DateTime.tryParse(entradaStr) : null;
-                final entradaFormatada = entrada != null
-                    ? '${entrada.day}/${entrada.month}/${entrada.year} ${entrada.hour.toString().padLeft(2, '0')}:${entrada.minute.toString().padLeft(2, '0')}'
-                    : 'Não informada';
+                    entradaStr.isNotEmpty
+                        ? DateTime.tryParse(entradaStr)
+                        : null;
+                final entradaFormatada =
+                    entrada != null
+                        ? '${entrada.day}/${entrada.month}/${entrada.year} ${entrada.hour.toString().padLeft(2, '0')}:${entrada.minute.toString().padLeft(2, '0')}'
+                        : 'Não informada';
 
                 final motorista = nota['motorista'] ?? '';
                 final expedicaoStr = nota['expedicao'] ?? '';
                 final expedicao =
-                    expedicaoStr.isNotEmpty ? DateTime.tryParse(expedicaoStr) : null;
-                final expedicaoFormatada = expedicao != null
-                    ? '${expedicao.day}/${expedicao.month}/${expedicao.year} ${expedicao.hour.toString().padLeft(2, '0')}:${expedicao.minute.toString().padLeft(2, '0')}'
-                    : '';
+                    expedicaoStr.isNotEmpty
+                        ? DateTime.tryParse(expedicaoStr)
+                        : null;
+                final expedicaoFormatada =
+                    expedicao != null
+                        ? '${expedicao.day}/${expedicao.month}/${expedicao.year} ${expedicao.hour.toString().padLeft(2, '0')}:${expedicao.minute.toString().padLeft(2, '0')}'
+                        : '';
 
                 final bool semMotorista = motorista.isEmpty;
 
-                final cardColor = semMotorista
-                    ? const Color(0xFFFFF3E0)
-                    : const Color(0xFFE3F2FD);
-                final titleColor = semMotorista
-                    ? const Color(0xFFE65100)
-                    : colors.primary;
+                final cardColor =
+                    semMotorista
+                        ? const Color(0xFFFFF3E0)
+                        : colors.secondaryContainer;
+                final titleColor =
+                    semMotorista ? const Color(0xFFE65100) : colors.primary;
                 final iconColor =
                     semMotorista ? const Color(0xFFE65100) : colors.primary;
                 final footerTextColor =
@@ -427,6 +444,8 @@ class DashboardScreen extends StatelessWidget {
         onPressed: () => _addNewOrder(context),
         icon: const Icon(Icons.add),
         label: const Text('Adicionar Nota'),
+        foregroundColor: colors.onPrimary,
+        backgroundColor: colors.primary
       ),
     );
   }
