@@ -9,14 +9,33 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
+  // Mapeamento de nomes para e-mails
+  final Map<String, String> userEmails = {
+    '-- Selecione --': 'adm@email.com',
+    'Bernardo': 'bernardo@email.com',
+    'Cristiano': 'cristiano@email.com',
+    'Duth': 'duth@email.com',
+    'Gustavo': 'gustavo@email.com',
+    'Jenifer': 'jenifer@email.com',
+    'Marcio': 'marcio@email.com',
+    'Monique': 'monique@email.com',
+    'Rodolfo': 'rodolfo@email.com',
+    'Veronica': 'veronica@email.com',
+    'Vinicius': 'vinicius@email.com',
+    'Sabrina': 'sabrina@email.com',
+    'Savio': 'savio@email.com',
+    'Wagner': 'wagner@email.com',
+    'Ygor': 'ygor@gmail.com'
+  };
+
+  String selectedName = '-- Selecione --'; // Nome inicialmente selecionado
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   String? _errorMessage;
 
-  final Color _primaryGreen = const Color(0xFF2E7D32);
-
   Future<void> _login() async {
+    final email = userEmails[selectedName]!;
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -24,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
+        email: email,
         password: _passwordController.text.trim(),
       );
     } on FirebaseAuthException catch (e) {
@@ -42,31 +61,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  Widget _buildInput({
-    required TextEditingController controller,
-    required String label,
-    bool obscure = false,
-    TextInputType? keyboardType,
-  }) {
+  Widget _buildPasswordInput() {
     return TextField(
-      controller: controller,
-      obscureText: obscure,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      ),
+      controller: _passwordController,
+      obscureText: true,
+      decoration: const InputDecoration(labelText: 'Senha'),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       body: Center(
@@ -89,28 +99,49 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.lock_outline, size: 64, color: _primaryGreen),
+                Icon(Icons.lock_outline, size: 64, color: colors.primary),
                 const SizedBox(height: 16),
                 Text(
                   'Bem-vindo de volta!',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: _primaryGreen,
+                        color: colors.primary,
                         fontWeight: FontWeight.bold,
                       ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
 
-                _buildInput(
-                  controller: _emailController,
-                  label: 'E-mail',
-                  keyboardType: TextInputType.emailAddress,
+                // Dropdown de nomes
+                DropdownButtonFormField<String>(
+                  value: selectedName,
+                  decoration: const InputDecoration(labelText: 'Usuário'),
+                  items: userEmails.keys.map((name) {
+                    return DropdownMenuItem(
+                      value: name,
+                      child: Text(name),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => selectedName = value);
+                    }
+                  },
                 ),
+
                 const SizedBox(height: 16),
-                _buildInput(
-                  controller: _passwordController,
-                  label: 'Senha',
-                  obscure: true,
+                _buildPasswordInput(),
+
+                const SizedBox(height: 20),
+                SizedBox(
+                  height: 50,
+                  width: double.infinity,
+                  child: _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : FilledButton.icon(
+                          icon: const Icon(Icons.login),
+                          onPressed: _login,
+                          label: const Text('Entrar'),
+                        ),
                 ),
 
                 const SizedBox(height: 20),
@@ -120,30 +151,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: const TextStyle(color: Colors.red),
                     textAlign: TextAlign.center,
                   ),
-
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: _isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _primaryGreen,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: _login,
-                          icon: const Icon(Icons.login, color: Colors.white),
-                          label: const Text(
-                            'Entrar',
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                        ),
-                ),
-
-                const SizedBox(height: 16),
               ],
             ),
           ),

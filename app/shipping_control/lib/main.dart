@@ -20,12 +20,20 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Meu App com Firebase',
-      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.deepPurple),
+      title: 'Shipping Control',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorSchemeSeed: const Color(0xFF2E7D32), // Verde semente
+        brightness: Brightness.light,
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        ),
+      ),
       initialRoute: '/',
       onGenerateRoute: AppRoutes.generateRoute,
-      home:
-          const AuthWrapper(), // usado se initialRoute for '/', senão pode remover
+      home: const AuthWrapper(),
     );
   }
 }
@@ -38,19 +46,16 @@ class AuthWrapper extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-        // Mostra tela de carregamento enquanto aguarda autenticação
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
 
-        // Se estiver logado, vai para o dashboard
         if (snapshot.hasData) {
           return const DashboardScreen();
         }
 
-        // Se não estiver logado, vai para o login
         return const LoginScreen();
       },
     );
